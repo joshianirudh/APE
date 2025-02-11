@@ -110,6 +110,7 @@ def generate(args):
         len_query = query_input_ids.shape[1]
 
         context_input_ids = tokenizer(contexts, return_tensors='pt', truncation=True, max_length=8192-len_prefix-len_query-256, padding=True, add_special_tokens=False).input_ids
+        print(context_input_ids.shape)
         context_mask = (context_input_ids != tokenizer.pad_token_id).reshape(-1)
         
         enable_attention_prefill_prefix(args.model, model)
