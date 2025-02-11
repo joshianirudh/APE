@@ -1,5 +1,10 @@
-# <img src="image/logo.png" width="35" style="vertical-align: top;"/> **APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding**  
-[ICLR 2025]
+<div style="display: flex; align-items: flex-start;">
+  <img src="image/logo.png" width="35" height="35" style="margin-right: 5px;">
+  <div>
+    <h1>APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding [ICLR 2025]</h1><br>
+  </div>
+</div>
+
 
 ## Installation
 
