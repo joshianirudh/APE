@@ -1,9 +1,11 @@
 <div style="display: flex; align-items: flex-start;">
-  <img src="image/logo.png" width="35" height="35" style="margin-right: 8px;">
+  <img src="image/logo.png" width="40" height="40" style="margin-right: 10px;">
   <div>
-    <h1 style="margin: 0;">APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding [ICLR 2025]</h1>
+    <h1 style="margin: 0;">APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding</h1>
+    <p style="margin: 0;">[ICLR 2025]</p>
   </div>
 </div>
+
 
 
 
