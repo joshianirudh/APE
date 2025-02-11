@@ -180,6 +180,7 @@ def llama_attention_prefill_query(
 
     scale = scale * temperature
     attn_output_context  = attn_output_context * (lse_context**(scale-1))
+    print(lse_context**(scale-1))
     lse_context = lse_context**(scale)
 
     attn_weights = torch.cat([lse_context, lse_other], dim=-1).unsqueeze(dim=-2)
