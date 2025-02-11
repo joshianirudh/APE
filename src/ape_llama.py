@@ -166,7 +166,7 @@ def llama_attention_prefill_query(
     # repeat k/v heads if n_kv_heads < n_heads
     key_states = repeat_kv(key_states, self.num_key_value_groups)
     value_states = repeat_kv(value_states, self.num_key_value_groups)
-
+    '''
     key_states_context = key_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
     key_states_other = torch.cat([key_states[:, :, :self.len_prefix], key_states[:, :, self.len_prefix+self.len_context:]], dim=-2)
     value_states_context = value_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
@@ -188,6 +188,36 @@ def llama_attention_prefill_query(
     )
     value_states = torch.cat([attn_output_context.unsqueeze(-2), attn_output_other.unsqueeze(-2)], dim=-2)
     attn_output = torch.matmul(attn_weights, value_states).squeeze(dim=-2)
+    attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+    '''
+    attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
+    causal_mask = torch.full(
+        (attn_weights.shape[2], attn_weights.shape[3]), fill_value=torch.finfo(attn_weights.dtype).min, dtype=attn_weights.dtype, device=attn_weights.device
+    )
+    if attn_weights.shape[2] != 1:
+        causal_mask = torch.triu(causal_mask, diagonal=attn_weights.shape[3]-attn_weights.shape[2] + 1)
+        attn_weights = attn_weights + causal_mask.unsqueeze(dim=0).unsqueeze(dim=0)
+
+    attn_weights_inst = torch.logsumexp(attn_weights[:, :, :, :self.len_instruction], dim=-1)
+    attn_weights_inst_norm = nn.functional.softmax(attn_weights[:, :, :, :self.len_instruction], dim=-1, dtype=torch.float32).to(query_states.dtype)
+    value_inst = torch.matmul(attn_weights_inst_norm, value_states[:, :, :self.len_instruction, :])
+
+    attn_weights_doc = torch.logsumexp(attn_weights[:, :, :, self.len_instruction:self.len_instruction+self.len_document] / temperature, dim=-1) * temperature + math.log(scale)
+    attn_weights_doc_norm = nn.functional.softmax(attn_weights[:, :, :, self.len_instruction:self.len_instruction+self.len_document] / temperature, dim=-1, dtype=torch.float32).to(query_states.dtype)
+    value_doc = torch.matmul(attn_weights_doc_norm, value_states[:, :, self.len_instruction:self.len_instruction+self.len_document, :])
+    attn_weights_query = torch.logsumexp(attn_weights[:, :, :, self.len_instruction+self.len_document:], dim=-1)
+    attn_weights_query_norm = nn.functional.softmax(attn_weights[:, :, :, self.len_instruction+self.len_document:], dim=-1, dtype=torch.float32).to(query_states.dtype)
+    value_query = torch.matmul(attn_weights_query_norm, value_states[:, :, self.len_instruction+self.len_document:, :])
+
+    attn_weights = torch.cat([attn_weights_inst.unsqueeze(-1), attn_weights_doc.unsqueeze(-1), attn_weights_query.unsqueeze(-1)], dim=-1).unsqueeze(dim=-2)
+    attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
+        query_states.dtype
+    )
+    value_states = torch.cat([value_inst.unsqueeze(-2), value_doc.unsqueeze(-2), value_query.unsqueeze(-2)], dim=-2)
+
+    attn_output = torch.matmul(attn_weights, value_states).squeeze(dim=-2)
+
+    attn_output = attn_output.transpose(1, 2).contiguous()
     attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
 
     attn_output = self.o_proj(attn_output)
