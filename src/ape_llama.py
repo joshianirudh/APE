@@ -166,7 +166,7 @@ def llama_attention_prefill_query(
     # repeat k/v heads if n_kv_heads < n_heads
     key_states = repeat_kv(key_states, self.num_key_value_groups)
     value_states = repeat_kv(value_states, self.num_key_value_groups)
-    '''
+    
     key_states_context = key_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
     key_states_other = torch.cat([key_states[:, :, :self.len_prefix], key_states[:, :, self.len_prefix+self.len_context:]], dim=-2)
     value_states_context = value_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
@@ -189,7 +189,8 @@ def llama_attention_prefill_query(
     value_states = torch.cat([attn_output_context.unsqueeze(-2), attn_output_other.unsqueeze(-2)], dim=-2)
     attn_output = torch.matmul(attn_weights, value_states).squeeze(dim=-2)
     attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
-    '''
+    print("A:", attn_output)
+    
     attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
     causal_mask = torch.full(
         (attn_weights.shape[2], attn_weights.shape[3]), fill_value=torch.finfo(attn_weights.dtype).min, dtype=attn_weights.dtype, device=attn_weights.device
@@ -219,6 +220,7 @@ def llama_attention_prefill_query(
 
     attn_output = attn_output.transpose(1, 2).contiguous()
     attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+    print("B:", attn_output)
 
     attn_output = self.o_proj(attn_output)
 
