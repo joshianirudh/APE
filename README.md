@@ -1,5 +1,6 @@
 # <img src="image/logo.png" width="40" height="40" align="top">  APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding [ICLR 2025]
 
+### [Paper](https://arxiv.org/abs/2502.05431) | [Project](https://infini-ai-lab.github.io/APE-Page)
 
 ## Installation
 
