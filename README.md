@@ -1,5 +1,5 @@
 <h1 style="display: inline-flex; align-items: center; margin: 0;">
-  <img src="image/logo.png" width="28" height="28" style="margin-right: 10px; position: relative; top: 0px;">
+  <img src="image/logo.png" width="28" height="28" style="margin-right: 10px; position: relative; top: -30px;">
   APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding [ICLR 2025]
 </h1>
 
