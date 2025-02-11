@@ -186,8 +186,8 @@ def llama_attention_prefill_query(
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
         query_states.dtype
     )
-    value_states = torch.cat([attn_output_context.unsqueeze(-2), attn_output_other.unsqueeze(-2)], dim=-2)
-    attn_output = torch.matmul(attn_weights, value_states).squeeze(dim=-2)
+    value_states_new = torch.cat([attn_output_context.unsqueeze(-2), attn_output_other.unsqueeze(-2)], dim=-2)
+    attn_output = torch.matmul(attn_weights, value_states_new).squeeze(dim=-2)
     attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
     print("A:", attn_output)
     
