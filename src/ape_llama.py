@@ -167,10 +167,11 @@ def llama_attention_prefill_query(
     key_states = repeat_kv(key_states, self.num_key_value_groups)
     value_states = repeat_kv(value_states, self.num_key_value_groups)
 
-    key_states_context = torch.cat([key_states[:, :, :self.len_prefix], key_states[:, :, self.len_prefix+self.len_context:]], dim=-2)
-    key_states_other = key_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
-    value_states_context = torch.cat([value_states[:, :, :self.len_prefix], value_states[:, :, self.len_prefix+self.len_context:]], dim=-2)
-    value_states_other = value_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
+    key_states_context = key_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
+    key_states_other = torch.cat([key_states[:, :, :self.len_prefix], key_states[:, :, self.len_prefix+self.len_context:]], dim=-2)
+    value_states_context = value_states[:, :, self.len_prefix:self.len_prefix+self.len_context]
+    value_states_other = torch.cat([value_states[:, :, :self.len_prefix], value_states[:, :, self.len_prefix+self.len_context:]], dim=-2)
+
 
     attn_output_context, lse_context, _ = flash_attn_func(query_states.transpose(1, 2), key_states_context.transpose(1, 2), value_states_context.transpose(1, 2), causal=False, softmax_scale = 1 / (math.sqrt(self.head_dim) * temperature), return_attn_probs=True)
     attn_output_other, lse_other, _ = flash_attn_func(query_states.transpose(1, 2), key_states_other.transpose(1, 2), value_states_other.transpose(1, 2), causal=True, return_attn_probs=True)
