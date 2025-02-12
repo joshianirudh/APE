@@ -7,8 +7,8 @@ import argparse
 def parse_args(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default=None, choices=["llama3-8b-instruct", "llama3.1-8b-instruct", "mistral-7b-instruct-v0.3", "gemma2-9b-it"])
-    parser.add_argument("--temperature", type=float, default=1.0)
-    parser.add_argument("--scale", type=float, default=1.0)
+    parser.add_argument("--temperature", type=float, default=0.9)
+    parser.add_argument("--scale", type=float, default=0.9)
     return parser.parse_args(args)
 
 def load_model_and_tokenizer(model_name, device):
