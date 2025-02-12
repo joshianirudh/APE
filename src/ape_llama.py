@@ -179,7 +179,6 @@ def llama_attention_prefill_query(
     lse_other = lse_other.transpose(1, 2).unsqueeze(-1).to(query_states.dtype)
 
     scale = scale * temperature
-    attn_output_context  = attn_output_context * (lse_context*(scale))
     lse_context = lse_context*(scale)
     print(lse_context)
 
