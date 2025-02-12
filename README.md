@@ -2,8 +2,6 @@
 
 ### [[Paper](https://arxiv.org/abs/2502.05431)] | [[Project](https://infini-ai-lab.github.io/APE-Page)]
 
-[[Demo](assets/demo.gif)]
-
 ## TL;DR
 
 We introduce APE for context-augmented generation with better efficiency and performance.
@@ -20,14 +18,11 @@ pip install -r requirements.txt
 python setup.py install
 ```
 
-### Install experiment dependencies
+## Run Context-augmented QA system with APE
+
 ```bash
-pip install -r requirements.txt
+CUDA_VISIBLE_DEVICES=0 python demo_APE.py  --model llama3-8b-instruct
 ```
-
-## Run APE CAG-LLM Chatbot
-
-Here, we demonstrate a basic demo of APE in `demo_APE.py`
 
 ## Experiments
 
