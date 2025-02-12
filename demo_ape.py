@@ -4,12 +4,23 @@ import numpy as np
 import random
 import argparse
 
+from ape import enable_attention_prefill_prefix, enable_attention_prefill_context, enable_attention_prefill_query
+
 def parse_args(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str, default=None, choices=["llama3-8b-instruct", "llama3.1-8b-instruct", "mistral-7b-instruct-v0.3", "gemma2-9b-it"])
     parser.add_argument("--temperature", type=float, default=0.9)
     parser.add_argument("--scale", type=float, default=0.9)
     return parser.parse_args(args)
+
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    torch.cuda.manual_seed_all(seed)
 
 def load_model_and_tokenizer(model_name, device):
     if model_name == "llama3-8b-instruct":
@@ -26,7 +37,6 @@ def load_model_and_tokenizer(model_name, device):
         model = AutoModelForCausalLM.from_pretrained("google/gemma-2-9b-it", torch_dtype=torch.bfloat16).to(device)
     return tokenizer, model
         
-
 def build_prefix(model_name, prompt):
     if "llama" in model_name:
         prompt = f"<|begin_of_text|>\n<|start_header_id|>user<|end_header_id|>\n{prompt}"
@@ -45,48 +55,6 @@ def build_suffix(model_name, prompt):
         prompt = f"{prompt}<end_of_turn>\n<start_of_turn>model\n"   
     return prompt
 
-def enable_attention_prefill_prefix(model_name, model):
-    if "llama" in args.model:
-        from ape.ape_llama import enable_llama_attention_prefill_prefix
-        enable_llama_attention_prefill_prefix(model)
-    elif "mistral" in model_name:
-        from ape.ape_mistral import enable_mistral_attention_prefill_prefix
-        enable_mistral_attention_prefill_prefix(model)
-    elif "gemma" in model_name:
-        from ape.ape_gemma import enable_gemma_attention_prefill_prefix
-        enable_gemma_attention_prefill_prefix(model)
-
-def enable_attention_prefill_context(model_name, model):
-    if "llama" in args.model:
-        from ape.ape_llama import enable_llama_attention_prefill_context
-        enable_llama_attention_prefill_context(model)
-    elif "mistral" in model_name:
-        from ape.ape_mistral import enable_mistral_attention_prefill_context
-        enable_mistral_attention_prefill_context(model)
-    elif "gemma" in model_name:
-        from ape.ape_gemma import enable_gemma_attention_prefill_context
-        enable_gemma_attention_prefill_context(model)
-
-def enable_attention_prefill_query(model_name, model, temperature, scale):
-    if "llama" in args.model:
-        from ape.ape_llama import enable_llama_attention_prefill_query
-        enable_llama_attention_prefill_query(model, temperature, scale)
-    elif "mistral" in model_name:
-        from ape.ape_mistral import enable_mistral_attention_prefill_query
-        enable_mistral_attention_prefill_query(model, temperature, scale)
-    elif "gemma" in model_name:
-        from ape.ape_gemma import enable_gemma_attention_prefill_query
-        enable_gemma_attention_prefill_query(model, temperature, scale)
-
-def seed_everything(seed):
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
-    torch.cuda.manual_seed_all(seed)
-
 def generate(args):
     prefix = ""
     contexts = [
@@ -97,8 +65,6 @@ def generate(args):
         "My friends and I love learning new skills, like photography and painting. We also enjoy visiting art workshops and DIY craft events."
     ]
     query = "Question: what are ten ideas for a social with a large groups of friends in New York City.\nAnswer:"
-
-
 
     device = torch.device(f'cuda:0')
     tokenizer, model = load_model_and_tokenizer(args.model, device)
@@ -111,9 +77,7 @@ def generate(args):
         query_input_ids = tokenizer(query, truncation=False, return_tensors="pt").input_ids
         len_prefix = prefix_input_ids.shape[1]
         len_query = query_input_ids.shape[1]
-
         context_input_ids = tokenizer(contexts, return_tensors='pt', truncation=True, max_length=8192-len_prefix-len_query-256, padding=True, add_special_tokens=False).input_ids
-        print(context_input_ids.shape)
         context_mask = (context_input_ids != tokenizer.pad_token_id).reshape(-1)
         
         enable_attention_prefill_prefix(args.model, model)
@@ -149,6 +113,7 @@ def generate(args):
             past_position = torch.cat([past_key_value[2][:, :len_prefix],
                                         past_key_value[2][:, len_prefix:].repeat(bsz, 1).flatten()[context_mask].unsqueeze(0)], dim=1)
             past_key_values.append((past_key, past_value, past_position, len(contexts)))
+        
         context_input_ids = context_input_ids.flatten()[context_mask].unsqueeze(0)
         input_ids = torch.cat([prefix_input_ids, context_input_ids, query_input_ids], dim=-1)
         context_length = input_ids.shape[-1]
