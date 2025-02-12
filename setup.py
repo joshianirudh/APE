@@ -8,7 +8,8 @@ setup(
     author="Xinyu Yang",
     author_email='xinyuya2@andrew.cmu.edu',
     url='',
-    packages=find_packages(),
+    package_dir={"": "src"}
+    packages=find_packages(where="src"),
     include_package_data=True,
     zip_safe=False,
 )
