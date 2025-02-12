@@ -8,14 +8,13 @@ from transformers.models.mistral.modeling_mistral import (
 from transformers.modeling_outputs import BaseModelOutputWithPast
 
 import math
-import numpy as np
 import types
 import torch
 
 from torch import nn
 
 from flash_attn import flash_attn_func
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 from functools import partial
 
