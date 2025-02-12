@@ -116,7 +116,7 @@ def gemma_attention_prefill_context(
     else:
         attn_output = flash_attn_func(query_states.transpose(1, 2), key_states.transpose(1, 2), value_states.transpose(1, 2), causal=False, **flash_kwargs)
 
-    attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+    attn_output = attn_output.reshape(bsz, q_len, -1)
 
     attn_output = self.o_proj(attn_output)
 
@@ -196,7 +196,7 @@ def gemma_attention_prefill_query(
     )
     value_states = torch.cat([attn_output_context.unsqueeze(-2), attn_output_other.unsqueeze(-2)], dim=-2)
     attn_output = torch.matmul(attn_weights, value_states).squeeze(dim=-2)
-    attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
+    attn_output = attn_output.reshape(bsz, q_len, -1)
 
     attn_output = self.o_proj(attn_output)
 
