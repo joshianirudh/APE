@@ -18,7 +18,9 @@ pip install -r requirements.txt
 python setup.py install
 ```
 
-## Run Context-augmented QA system with APE
+## Run Context-augmented QA examples with APE
+
+We use default values of 0.9 for both the attention temperature and scaling factor, which maintains over 90% performance across most few-shot tasks.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python demo_APE.py  --model llama3-8b-instruct
@@ -26,10 +28,19 @@ CUDA_VISIBLE_DEVICES=0 python demo_APE.py  --model llama3-8b-instruct
 
 ## Experiments
 
-To reproduce APE results on the retrieval-augmented generation (RAG) and in-context-learning (ICL) tasks, refer to the instruction and code available in the `experiments` directory.
+To reproduce the APE results for retrieval-augmented generation (RAG) and in-context learning (ICL) tasks in Section 5, please follow the instructions and use the code provided in the `experiments` directory.
 
+## TODOs
+We will release the code and data in the following order, please stay tuned!
+
+- [x] Release core code of APE, including Llama-3, Llama-3.1, Mistral-v0.3, and Gemma-2.
+- [x] Release RAG and ICL evaluation code.
+- [x] Release APE context-augmented QA demo
+- [ ] Incorporate APE into efficient inference engine
 
 ## Citation
+
+If you find APE useful or relevant to your project and research, please kindly cite our paper:
 
 ```bibtex
 @inproceedings{yang2025ape,
