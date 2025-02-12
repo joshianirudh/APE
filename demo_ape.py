@@ -154,6 +154,8 @@ def generate(args):
         context_length = input_ids.shape[-1]
 
         enable_attention_prefill_query(args.model, model, args.temperature, args.scale)
+        generation_kwargs = {}
+        generation_kwargs["cache_implementation"] = None
         output = model.generate(
             input_ids=input_ids.to(model.device),
             max_new_tokens=512,
@@ -161,6 +163,7 @@ def generate(args):
             do_sample=False,
             temperature=1.0,
             past_key_values=past_key_values,
+            **generation_kwargs
         )[0]
         pred = tokenizer.decode(output[context_length:], skip_special_tokens=True)
         print(pred)
