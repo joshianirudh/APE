@@ -2,9 +2,7 @@
 
 ### [[Paper](https://arxiv.org/abs/2502.05431)] | [[Project](https://infini-ai-lab.github.io/APE-Page)]
 
-<video width="1000" controls>
-  <source src="assets/demo.mp4" type="assets/demo.mp4">
-</video>
+[[Demo](assets/demo.gif)]
 
 ## TL;DR
 
