@@ -68,7 +68,7 @@ def gemma_attention_prefill_prefix(
     return attn_output, attn_weights, past_key_value
 
 
-def llama_attention_prefill_context(
+def gemma_attention_prefill_context(
     self,
     hidden_states: torch.Tensor,
     attention_mask: Optional[torch.Tensor] = None,
@@ -188,7 +188,7 @@ def gemma_attention_prefill_query(
 
     scale = scale * temperature
     lse_context = lse_context * scale
-    
+
     attn_weights = torch.cat([lse_context, lse_other], dim=-1).unsqueeze(dim=-2)
     attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(
         query_states.dtype
