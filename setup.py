@@ -8,8 +8,7 @@ setup(
     author="Xinyu Yang",
     author_email='xinyuya2@andrew.cmu.edu',
     url='',
-    package_dir={"ape": "src"},
-    packages=["ape"],
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
 )
