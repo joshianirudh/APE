@@ -20,7 +20,7 @@ python setup.py install
 
 ## Run Context-augmented Question Answering with APE
 
-By default, the attention temperature and scaling factor are set to 0.9, preserving over 90% performance on few-shot tasks.
+By default, the temperature and scaling factor are set to 0.9, preserving over 90% performance on few-shot tasks.
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python demo_APE.py  --model llama3-8b-instruct
