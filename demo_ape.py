@@ -156,7 +156,7 @@ def generate(args):
         enable_attention_prefill_query(args.model, model, args.temperature, args.scale)
         output = model.generate(
             input_ids=input_ids.to(model.device),
-            max_new_tokens=256,
+            max_new_tokens=512,
             num_beams=1,
             do_sample=False,
             temperature=1.0,
