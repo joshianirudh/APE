@@ -180,7 +180,7 @@ def llama_attention_prefill_query(
 
     scale = scale * temperature
     attn_output_context  = attn_output_context * (lse_context**(scale-1))
-    print(lse_context**(scale-1))
+    print(lse_context, lse_context**(scale-1))
     lse_context = lse_context**(scale)
 
     attn_weights = torch.cat([lse_context, lse_other], dim=-1).unsqueeze(dim=-2)
@@ -204,7 +204,7 @@ def llama_attention_prefill_query(
     attn_weights_inst_norm = nn.functional.softmax(attn_weights[:, :, :, :self.len_prefix], dim=-1, dtype=torch.float32).to(query_states.dtype)
     value_inst = torch.matmul(attn_weights_inst_norm, value_states[:, :, :self.len_prefix, :])
 
-    attn_weights_doc = torch.logsumexp(attn_weights[:, :, :, self.len_prefix:self.len_prefix+self.len_context] / temperature, dim=-1) * temperature + math.log(scale)
+    attn_weights_doc = torch.logsumexp(attn_weights[:, :, :, self.len_prefix:self.len_prefix+self.len_context] / temperature, dim=-1) * temperature * scale
     attn_weights_doc_norm = nn.functional.softmax(attn_weights[:, :, :, self.len_prefix:self.len_prefix+self.len_context] / temperature, dim=-1, dtype=torch.float32).to(query_states.dtype)
     value_doc = torch.matmul(attn_weights_doc_norm, value_states[:, :, self.len_prefix:self.len_prefix+self.len_context, :])
     attn_weights_query = torch.logsumexp(attn_weights[:, :, :, self.len_prefix+self.len_context:], dim=-1)
