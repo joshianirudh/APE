@@ -1,11 +1,24 @@
-# <img src="image/logo.png" width="40" height="40" align="top">  APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding [ICLR 2025]
+# <img src="assets/logo.png" width="40" height="40" align="top">  APE: Faster and Longer Context-Augmented Generation via Adaptive Parallel Encoding [ICLR 2025]
 
-### [Paper](https://arxiv.org/abs/2502.05431) | [Project](https://infini-ai-lab.github.io/APE-Page)
+### [[Paper](https://arxiv.org/abs/2502.05431)] | [[Project](https://infini-ai-lab.github.io/APE-Page)]
 
-## Installation
+<video width="1000" controls>
+  <source src="assets/demo.mp4" type="assets/demo.mp4">
+</video>
 
-### Install APE attention
+## TL;DR
+
+We introduce APE for context-augmented generation with better efficiency and performance.
+
+## Usage
+
+### Environment Setup
+
 ```bash
+conda create -yn ape python=3.10
+conda activate ape
+
+pip install -r requirements.txt
 python setup.py install
 ```
 
@@ -14,7 +27,7 @@ python setup.py install
 pip install -r requirements.txt
 ```
 
-## Demo
+## Run APE CAG-LLM Chatbot
 
 Here, we demonstrate a basic demo of APE in `demo_APE.py`
 
