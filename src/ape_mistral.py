@@ -235,7 +235,7 @@ def mistral_forward(
         position_ids = cache_position.unsqueeze(0)
 
     causal_mask = self._update_causal_mask(
-        attention_mask, inputs_embeds, cache_position, None, output_attentions
+        attention_mask, inputs_embeds, cache_position, None, use_cache, output_attentions
     )
 
     # embed positions
