@@ -47,13 +47,13 @@ def build_suffix(model_name, prompt):
 
 def enable_attention_prefill_prefix(model_name, model):
     if "llama" in args.model:
-        from src.ape_llama import enable_llama_attention_prefill_prefix
+        from ape.ape_llama import enable_llama_attention_prefill_prefix
         enable_llama_attention_prefill_prefix(model)
     elif "mistral" in model_name:
-        from src.ape_mistral import enable_mistral_attention_prefill_prefix
+        from ape.ape_mistral import enable_mistral_attention_prefill_prefix
         enable_mistral_attention_prefill_prefix(model)
     elif "gemma" in model_name:
-        from src.ape_gemma import enable_gemma_attention_prefill_prefix
+        from ape.ape_gemma import enable_gemma_attention_prefill_prefix
         enable_gemma_attention_prefill_prefix(model)
 
 def enable_attention_prefill_context(model_name, model):

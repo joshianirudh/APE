@@ -23,7 +23,7 @@ python setup.py install
 By default, the temperature and scaling factor are set to 0.9, preserving over 90% performance on few-shot tasks.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python demo_APE.py  --model llama3-8b-instruct
+CUDA_VISIBLE_DEVICES=0 python demo_APE.py --model llama3-8b-instruct
 ```
 
 ## Experiments
