@@ -32,9 +32,11 @@ def load_model_and_tokenizer(model_name, device):
     Loads the user-chosen LLM and tokenizer in 8-bit floating.
     """
     if model_name == "llama3-8b-instruct":
-        tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+        tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct", cache_dir="/local/")
         model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct",
-                                                     torch_dtype=torch.bfloat16).to(device)
+                                                     cache_dir="/local/",
+                                                     torch_dtype=torch.bfloat16 
+                                                     ).to(device)
     elif model_name == "llama3.1-8b-instruct":
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.1-8B-Instruct")
         model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-3.1-8B-Instruct",
@@ -79,9 +81,8 @@ def retrieve_contexts(args, question):
     Loads passages from a file (one per line). Returns top-N contexts.
     """
     # Load Contriever for retrieval
-    contriever_tokenizer = AutoTokenizer.from_pretrained('facebook/contriever')
-    query_encoder = AutoModel.from_pretrained('facebook/contriever').cuda().eval()
-    context_encoder = AutoModel.from_pretrained('facebook/contriever').cuda().eval()
+    contriever_tokenizer = AutoTokenizer.from_pretrained('facebook/contriever', cache_dir="/local/")
+    query_encoder = AutoModel.from_pretrained('facebook/contriever', cache_dir="/local/").cuda().eval()
 
     # Read all lines from ArguAna 128k corpus
     with open(args.arguana_path, "r", encoding="utf-8") as f:
@@ -93,7 +94,7 @@ def retrieve_contexts(args, question):
 
     with torch.inference_mode():
         query_emb = query_encoder(question_input).last_hidden_state[:, 0, :]
-        ctx_emb = context_encoder(ctx_input).last_hidden_state[:, 0, :]
+        ctx_emb = query_encoder(ctx_input).last_hidden_state[:, 0, :]
         similarities = query_emb.matmul(ctx_emb.transpose(0, 1))
 
     # Sort passages by similarity descending, keep top-n
